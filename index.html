@@ -449,9 +449,8 @@
     <div class="sec-head"><div class="kicker">Limitations &amp; next steps</div><h2>From demo to system</h2></div>
     <div class="narrow">
       <p style="text-align:center">
-        The prototype answers its core question: heterogeneous consumer devices, including phones, can
-        collaboratively train a real LLM through one unified protocol. Three goals stand between that and a
-        system that works outside a controlled setting.
+        The prototype works in a controlled setting. Three goals separate it from a system the open-source
+        community could actually use.
       </p>
     </div>
 
@@ -459,32 +458,24 @@
       <div class="fcol">
         <h4>More Robust</h4>
         <ul>
-          <li><strong>Fault tolerance.</strong> A single disconnect currently stalls the whole pipeline on a timeout. Checkpointing each shard would let a dropped device's layers be recovered and reassigned.</li>
-          <li><strong>Dynamic re-sharding.</strong> A device's spare compute changes over time, so layer assignment should adapt continuously, not just at the start.</li>
+          <li><strong>Fault tolerance.</strong> Checkpoint shards so a dropped device's layers can be recovered and reassigned.</li>
+          <li><strong>Dynamic re-sharding.</strong> Re-balance layers as devices speed up or slow down, not just at the start.</li>
         </ul>
       </div>
       <div class="fcol">
         <h4>More Efficient</h4>
         <ul>
-          <li><strong>1F1B scheduling.</strong> Interleaving forward and backward passes removes the idle bubbles our current schedule leaves, the core technique behind GPipe and PipeDream.</li>
-          <li><strong>Activation compression.</strong> Quantizing the tensors on the wire cuts the bandwidth that dominates per-step latency.</li>
+          <li><strong>1F1B scheduling.</strong> Interleave forward and backward passes to remove pipeline bubbles.</li>
+          <li><strong>Activation compression.</strong> Quantize tensors on the wire to cut communication.</li>
         </ul>
       </div>
       <div class="fcol">
         <h4>More Open</h4>
         <ul>
-          <li><strong>Cross-platform support.</strong> Already begun: a PyTorch worker now joins the same pipeline, with the goal of any framework participating via the protocol.</li>
-          <li><strong>Verifying untrusted workers.</strong> Open participants could poison the model, so redundant computation and Byzantine-robust aggregation are needed to keep it safe.</li>
+          <li><strong>Cross-platform support.</strong> Already begun, with a PyTorch worker joining the pipeline.</li>
+          <li><strong>Verifying untrusted workers.</strong> Guard against poisoned gradients in an open network.</li>
         </ul>
       </div>
-    </div>
-
-    <div class="narrow">
-      <p style="text-align:center;margin-top:26px">
-        The prototype demonstrates that on-device distributed training is <em>feasible</em>. The remaining
-        work of fault tolerance, tighter scheduling, cross-platform support, and worker verification is what
-        separates a demonstration from a system the open-source community can actually use.
-      </p>
     </div>
   </section>
 
