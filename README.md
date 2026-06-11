@@ -1,51 +1,44 @@
-# Centurion — project blog (GitHub Pages)
+# Centurion — Project Blog
 
-A single self-contained `index.html` (inline CSS, no build step). Drop in two
-images/video and it's done.
+A written report, published as a webpage, on **Centurion: Distributed On-Device LLM Training** — a proof-of-concept system that trains a GPT-2-class language model across everyday consumer devices (phones, tablets, and laptops) collaborating over the internet.
 
-## Deploy to GitHub Pages
+**Live site:** https://xizhe-hao.github.io/centurion-blog/
 
-1. Create a new repo on GitHub, e.g. `centurion-blog` (public).
-2. Push these files to the `main` branch:
-   ```bash
-   cd C:\Users\ZachH\centurion-site
-   git init
-   git add .
-   git commit -m "Centurion project blog"
-   git branch -M main
-   git remote add origin https://github.com/<you>/centurion-blog.git
-   git push -u origin main
-   ```
-3. On GitHub: **Settings → Pages → Source: Deploy from a branch → `main` / `(root)` → Save.**
-4. Wait ~1 minute. Your site is live at
-   `https://<you>.github.io/centurion-blog/`
+## About the project
 
-## Add the visuals (placeholders are marked in the page)
+Training large language models normally happens in datacenters because of its computational footprint. Centurion asks whether pre-training can instead be spread across the idle compute already sitting in personal devices. With four heterogeneous workers (one iPhone, two iPads, and a Mac), Centurion trained **GPT-2-Medium (355M parameters)** over the internet at roughly **3,250 tokens per second** — a model none of those devices could hold on its own, trained by all of them together.
 
-- **Pipeline timeline figure** — export the forward/backward/bubble chart from
-  your slides as `pipeline.png`, put it in this folder, then replace the
-  `<div class="video-ph" id="pipeline-fig">…</div>` block with:
-  ```html
-  <img src="pipeline.png" alt="Pipeline timeline" style="width:100%;border:1px solid #d4d4d2;border-radius:12px">
-  ```
+The system uses **pipeline parallelism**: the model is sliced into consecutive layer ranges, each device owns one range, activations flow forward and gradients flow back, and a coordinating server relays them between stages. Layer assignment is **capability-proportional** — stronger devices get more layers — which keeps the pipeline from being throttled by the slowest worker.
 
-- **Demo video** — either:
-  - YouTube: replace the `id="demo-video"` box with
-    ```html
-    <iframe width="100%" style="aspect-ratio:16/9;border:0;border-radius:12px"
-      src="https://www.youtube.com/embed/VIDEO_ID" allowfullscreen></iframe>
-    ```
-  - or a local file: drop `demo.mp4` here and use
-    ```html
-    <video src="demo.mp4" controls style="width:100%;border-radius:12px"></video>
-    ```
+The blog covers the motivation, how the system works, results, findings, and next steps.
 
-## Things to double-check before publishing
+## Authors
 
-- The "~3,250 tok/s ≈ RTX 4080" claim from the talk is **not** on the page on
-  purpose — it's risky if questioned. Add it back only with the exact
-  batch/seq/precision you measured the GPU at.
-- Confirm the per-worker demo numbers (layers, MB, RTT) match your final run;
-  they're transcribed from the orchestrator screenshot.
-- Optional: add a real loss-curve image to the Results section — it's the most
-  direct "it actually learned" evidence.
+Kurt Gu · Zach Hao · Tony Wu — University of Washington, CSE 599M
+
+## Repository contents
+
+This repo hosts the blog itself, a single self-contained page with no build step.
+
+| File | Purpose |
+|---|---|
+| `index.html` | The full blog (HTML + inline CSS) |
+| `implementation.png` | System architecture diagram |
+| `pipeline.png` | Pipeline-timeline figure (forward / backward / bubbles) |
+
+## Run locally
+
+No build tooling required — just open the file:
+
+```bash
+git clone https://github.com/Xizhe-Hao/centurion-blog.git
+cd centurion-blog
+# open index.html in any browser
+```
+
+(The embedded demo video only plays over `http(s)`, not when opening the file directly, so view the live site to watch it.)
+
+## Project code
+
+The Centurion system itself (iOS/macOS app, MLX-Swift transformer, and the Python coordination server) lives in a separate repository:
+https://github.com/therapyKG/Centurion
