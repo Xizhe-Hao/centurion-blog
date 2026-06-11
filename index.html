@@ -458,52 +458,24 @@
     <div class="future">
       <div class="fcol">
         <h4>More Robust</h4>
-        <p style="margin-top:0">
-          The workers are consumer devices, and so unreliable by nature: phones are picked up, laptops sleep,
-          and connections drop. The most pressing need is <strong>error-handling for workers that join or
-          leave mid-run</strong>. This is critical because of how the pipeline synchronizes: every device
-          must acknowledge each step, so a single disconnect stalls the entire pipeline on a timeout.
-          Periodically checkpointing each shard would let a dropped device's layers be recovered and
-          reassigned to a device still online, turning a single point of failure into graceful degradation.
-        </p>
-        <p>
-          A second need is <strong>continuous performance profiling for dynamic workload distribution</strong>.
-          Centurion currently profiles once, at the start, and fixes the assignment, but a device's spare
-          compute changes over time, as when an idle phone begins running a game. Continuous profiling and
-          dynamic re-sharding, shifting layers as devices speed up or slow down, are what truly deliver
-          <em>opportunistic idle-time participation</em>, since idle capacity is a moving target.
-        </p>
+        <ul>
+          <li><strong>Fault tolerance.</strong> A single disconnect currently stalls the whole pipeline on a timeout. Checkpointing each shard would let a dropped device's layers be recovered and reassigned.</li>
+          <li><strong>Dynamic re-sharding.</strong> A device's spare compute changes over time, so layer assignment should adapt continuously, not just at the start.</li>
+        </ul>
       </div>
       <div class="fcol">
         <h4>More Efficient</h4>
-        <p style="margin-top:0">
-          The largest efficiency gain available is <strong>true 1F1B scheduling to eliminate pipeline
-          bubbles</strong>. The current schedule runs all forward passes and then all backward passes, which
-          leaves devices idle while they wait. That idle gap is the bubble. A one-forward-one-backward schedule interleaves
-          the two so each device stays busy almost continuously, directly improving the efficiency we report.
-          It is the core technique behind GPipe and PipeDream.
-        </p>
-        <p>
-          A complementary step is <strong>compressing activations on the wire</strong>. Since per-step latency
-          is dominated by transferring activations between devices, quantizing those tensors would cut the
-          bandwidth that bottlenecks each step.
-        </p>
+        <ul>
+          <li><strong>1F1B scheduling.</strong> Interleaving forward and backward passes removes the idle bubbles our current schedule leaves, the core technique behind GPipe and PipeDream.</li>
+          <li><strong>Activation compression.</strong> Quantizing the tensors on the wire cuts the bandwidth that dominates per-step latency.</li>
+        </ul>
       </div>
       <div class="fcol">
         <h4>More Open</h4>
-        <p style="margin-top:0">
-          Two directions widen participation. The first is <strong>cross-platform support</strong>, which we
-          have already begun: a non-iOS, PyTorch worker has been brought into the same pipeline, and the goal
-          is for a worker in any framework to join simply by following the protocol.
-        </p>
-        <p>
-          The second is the one that matters most for crowd-sourcing: <strong>verifying untrusted
-          workers</strong>. Because participants are strangers' devices, a malicious worker could return
-          corrupted gradients and poison the model. In a datacenter every machine is trusted; in an open
-          network that assumption fails. Redundant computation, gradient-anomaly detection, and
-          Byzantine-robust aggregation would move the system from one that simply runs to one that runs
-          safely on an untrusted, open network.
-        </p>
+        <ul>
+          <li><strong>Cross-platform support.</strong> Already begun: a PyTorch worker now joins the same pipeline, with the goal of any framework participating via the protocol.</li>
+          <li><strong>Verifying untrusted workers.</strong> Open participants could poison the model, so redundant computation and Byzantine-robust aggregation are needed to keep it safe.</li>
+        </ul>
       </div>
     </div>
 
